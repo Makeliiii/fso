@@ -1,8 +1,10 @@
 import React from 'react'
 
-const Total = props => {
+const Total = ({ course }) => {
+    const total = course.parts.map(part => part.exercises).reduce((a, b) => a + b)
+
     return (
-        <p>Number of exercises {props.exercises1 + props.exercises2 + props.exercises3}</p>
+        <p>Number of exercises {total}</p>
     )
 }
 
