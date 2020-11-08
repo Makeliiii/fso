@@ -1,41 +1,83 @@
 import React, { useEffect, useState } from 'react'
-import axios from 'axios'
+
+import requests from './functions/requests'
 
 import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
 import Persons from './components/Persons'
+import Notification from './components/Notification'
 
 const App = () => {
-    const [ persons, setPersons ] = useState([]) 
+    const [ persons, setPersons ] = useState([])
     const [ newName, setNewName ] = useState('')
     const [ newNumber, setNewNumber ] = useState('')
     const [ filter, setFilter ] = useState('')
+    const [ message, setMessage ] = useState(null)
+    const [ style, setStyle ] = useState({
+        color: 'green',
+        background: 'lightgrey',
+        fontSize: 20,
+        borderStyle: 'solid',
+        borderRadius: 5,
+        padding: 10,
+        marginBottom: 10,
+    })
 
     const addName = event => {
         if (persons.some(person => person.name === newName)) {
             event.preventDefault()
-            return alert(`${newName} is already added to the phonebook!`)
+            const confirmation = window.confirm(`${newName} is already added to the phonebook! Update number?`)
+            const person = persons.find(person => person.name === newName)
+            const data = {
+                name: newName,
+                number: newNumber
+            }
+
+            if (confirmation) {
+                return requests.put('http://localhost:3001/persons/', person.id, data).catch(err => {
+                    console.log(err)
+                        setStyle({
+                            color: 'red',
+                            background: 'lightgrey',
+                            fontSize: 20,
+                            borderStyle: 'solid',
+                            borderRadius: 5,
+                            padding: 10,
+                            marginBottom: 10,
+                        })
+                        setMessage(`Information of ${newName} has already been removed from server...`)
+                })
+            }
+        }
+
+        const data = {
+            id: persons[persons.length - 1].id + 1,
+            name: newName,
+            number: newNumber
         }
 
         const personsCopy = [...persons]
-        personsCopy.push({ name: newName, number: newNumber })
+        personsCopy.push(data)
         setPersons(personsCopy)
+        setMessage(`Added ${newName}`)
+
+        requests.create('http://localhost:3001/persons', data)
+
         event.preventDefault()
     }
 
     useEffect(() => {
-        axios({
-            method: 'get',
-            url: 'http://localhost:3001/persons'
-        }).then(obj => {
-            console.log(obj.data)
-            setPersons(obj.data)
-        })
+        requests.get('http://localhost:3001/persons')
+            .then(obj => {
+                console.log(obj.data)
+                setPersons(obj.data)
+            })
     }, [])
 
     return (
         <div>
             <h2>Phonebook</h2>
+            <Notification message={message} style={style} />
             <Filter filter={filter} setFilter={setFilter} />
             <h2>add a new</h2>
             <PersonForm 
