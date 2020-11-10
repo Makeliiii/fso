@@ -7,7 +7,7 @@ const Persons = props => {
         const confirmation = window.confirm(`Delete ${person.name}?`)
 
         if (confirmation) {
-            return requests.dlt('http://localhost:3001/persons/', person.id)
+            return requests.dlt('/api/persons/', person.id)
         }
     }
 

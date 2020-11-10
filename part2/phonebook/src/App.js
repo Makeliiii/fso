@@ -34,7 +34,7 @@ const App = () => {
             }
 
             if (confirmation) {
-                return requests.put('http://localhost:3001/persons/', person.id, data).catch(err => {
+                return requests.put('/api/persons/', person.id, data).catch(err => {
                     console.log(err)
                         setStyle({
                             color: 'red',
@@ -51,7 +51,6 @@ const App = () => {
         }
 
         const data = {
-            id: persons[persons.length - 1].id + 1,
             name: newName,
             number: newNumber
         }
@@ -61,13 +60,13 @@ const App = () => {
         setPersons(personsCopy)
         setMessage(`Added ${newName}`)
 
-        requests.create('http://localhost:3001/persons', data)
+        requests.create('/api/persons', data)
 
         event.preventDefault()
     }
 
     useEffect(() => {
-        requests.get('http://localhost:3001/persons')
+        requests.get('/api/persons')
             .then(obj => {
                 console.log(obj.data)
                 setPersons(obj.data)
