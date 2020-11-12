@@ -68,8 +68,8 @@ const App = () => {
     useEffect(() => {
         requests.get('/api/persons')
             .then(obj => {
-                console.log(obj.data)
-                setPersons(obj.data)
+                console.log(obj.data.persons)
+                setPersons(obj.data.persons)
             })
     }, [])
 
